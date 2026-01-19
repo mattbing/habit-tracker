@@ -11,16 +11,16 @@
     "import:csv": "npx tsx scripts/import-csv.ts"
   },
   "dependencies": {
-    "hono": "^4.3.0",
-    "@hono/zod-validator": "^0.2.0",
-    "zod": "^3.23.0"
+    "hono": "^4.7.0",
+    "@hono/zod-validator": "^0.7.0",
+    "zod": "^4.3.0"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20240512.0",
-    "wrangler": "^3.57.0",
-    "typescript": "^5.4.0",
-    "tsx": "^4.10.0",
-    "better-sqlite3": "^11.0.0",
-    "@types/better-sqlite3": "^7.6.10"
+    "@cloudflare/workers-types": "^4.20250514.0",
+    "wrangler": "^4.59.0",
+    "typescript": "^5.8.0",
+    "tsx": "^4.19.0",
+    "better-sqlite3": "^12.6.0",
+    "@types/better-sqlite3": "^7.6.13"
   }
 }
