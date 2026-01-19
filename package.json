@@ -1,0 +1,26 @@
+{
+  "name": "habit-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:migrate": "wrangler d1 execute habit-tracker-db --local --file=./schema.sql",
+    "db:migrate:remote": "wrangler d1 execute habit-tracker-db --remote --file=./schema.sql",
+    "user:create": "npx tsx scripts/create-user.ts",
+    "import:csv": "npx tsx scripts/import-csv.ts"
+  },
+  "dependencies": {
+    "hono": "^4.3.0",
+    "@hono/zod-validator": "^0.2.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240512.0",
+    "wrangler": "^3.57.0",
+    "typescript": "^5.4.0",
+    "tsx": "^4.10.0",
+    "better-sqlite3": "^11.0.0",
+    "@types/better-sqlite3": "^7.6.10"
+  }
+}

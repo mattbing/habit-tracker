@@ -1,0 +1,8 @@
+name = "habit-tracker"
+main = "src/index.tsx"
+compatibility_date = "2024-05-01"
+
+[[d1_databases]]
+binding = "habit_tracker_db"
+database_name = "habit-tracker-db"
+database_id = "03b05265-c5e8-4477-9837-42fa0cea8868"
