@@ -1,5 +1,35 @@
 export function getTodayDate(): string {
-  return new Date().toISOString().split('T')[0];
+  return new Date().toISOString().split("T")[0];
+}
+
+export function formatRelativeTime(dateStr: string): string {
+  const date = new Date(dateStr + "T00:00:00");
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const diffTime = today.getTime() - date.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffDays === 0) {
+    return "completed today";
+  } else if (diffDays === 1) {
+    return "last done yesterday";
+  } else if (diffDays < 7) {
+    return `last done ${diffDays} days ago`;
+  } else if (diffDays < 14) {
+    return "last done a week ago";
+  } else if (diffDays < 30) {
+    const weeks = Math.floor(diffDays / 7);
+    return `last done ${weeks} weeks ago`;
+  } else if (diffDays < 60) {
+    return "last done a month ago";
+  } else if (diffDays < 365) {
+    const months = Math.floor(diffDays / 30);
+    return `last done ${months} months ago`;
+  } else {
+    const years = Math.floor(diffDays / 365);
+    return years === 1 ? "last done a year ago" : `last done ${years} years ago`;
+  }
 }
 
 export function formatDate(date: Date): string {

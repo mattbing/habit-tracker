@@ -15,6 +15,7 @@ export interface Habit {
   id: number;
   user_id: number;
   name: string;
+  sort_order: number;
   created_at: string;
 }
 
