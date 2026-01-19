@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
-    "db:migrate": "wrangler d1 execute habit-tracker-db --local --file=./schema.sql",
-    "db:migrate:remote": "wrangler d1 execute habit-tracker-db --remote --file=./schema.sql",
+    "dev": "npx wrangler dev",
+    "deploy": "npx wrangler deploy",
+    "db:migrate": "npx wrangler d1 execute habit-tracker-db --local --file=./schema.sql",
+    "db:migrate:remote": "npx wrangler d1 execute habit-tracker-db --remote --file=./schema.sql",
     "user:create": "npx tsx scripts/create-user.ts",
     "import:csv": "npx tsx scripts/import-csv.ts"
   },

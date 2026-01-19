@@ -10,7 +10,7 @@ export const HabitCard: FC<HabitCardProps> = ({ id, name, completedToday }) => {
   return (
     <div
       id={`habit-${id}`}
-      class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 flex items-center justify-between"
+      class="bg-gray-800 rounded-lg border border-gray-700 p-4 flex items-center justify-between"
     >
       <div class="flex items-center gap-3">
         <button
@@ -21,7 +21,7 @@ export const HabitCard: FC<HabitCardProps> = ({ id, name, completedToday }) => {
             w-8 h-8 rounded-full border-2 flex items-center justify-center transition-colors
             ${completedToday
               ? 'bg-green-500 border-green-500 text-white'
-              : 'border-gray-300 hover:border-green-400 text-transparent hover:text-green-400'
+              : 'border-gray-600 hover:border-green-400 text-transparent hover:text-green-400'
             }
           `}
         >
@@ -29,14 +29,14 @@ export const HabitCard: FC<HabitCardProps> = ({ id, name, completedToday }) => {
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
           </svg>
         </button>
-        <span class={`text-gray-800 ${completedToday ? 'line-through text-gray-400' : ''}`}>
+        <span class={`text-gray-100 ${completedToday ? 'line-through text-gray-500' : ''}`}>
           {name}
         </span>
       </div>
 
       <a
         href={`/habits/${id}/calendar`}
-        class="text-sm text-blue-500 hover:text-blue-600 hover:underline"
+        class="text-sm text-blue-400 hover:text-blue-300 hover:underline"
       >
         View Calendar
       </a>
@@ -48,7 +48,7 @@ export const HabitList: FC<{ habits: Array<{ id: number; name: string; completed
   return (
     <div class="space-y-3">
       {habits.length === 0 ? (
-        <p class="text-gray-500 text-center py-8">
+        <p class="text-gray-400 text-center py-8">
           No habits yet. Create your first habit below!
         </p>
       ) : (

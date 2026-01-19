@@ -22,19 +22,19 @@ export const Layout: FC<LayoutProps> = ({ title, children, username }) => {
           .htmx-request.htmx-indicator { display: inline; }
         `}</style>
       </head>
-      <body class="bg-gray-50 min-h-screen">
-        <nav class="bg-white shadow-sm border-b border-gray-200">
+      <body class="bg-gray-900 min-h-screen text-gray-100">
+        <nav class="bg-gray-800 border-b border-gray-700">
           <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
-            <a href="/" class="text-xl font-semibold text-gray-800 hover:text-gray-600">
+            <a href="/" class="text-xl font-semibold text-gray-100 hover:text-gray-300">
               Habit Tracker
             </a>
             {username && (
               <div class="flex items-center gap-4">
-                <span class="text-gray-600">Hi, {username}</span>
+                <span class="text-gray-400">Hi, {username}</span>
                 <form action="/logout" method="post">
                   <button
                     type="submit"
-                    class="text-sm text-gray-500 hover:text-gray-700"
+                    class="text-sm text-gray-400 hover:text-gray-200"
                   >
                     Logout
                   </button>

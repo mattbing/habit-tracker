@@ -41,29 +41,29 @@ app.get('/login', (c) => {
   return c.html(
     <Layout title="Login">
       <div class="max-w-md mx-auto">
-        <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Login</h1>
-        <form action="/login" method="post" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-4">
+        <h1 class="text-2xl font-bold text-gray-100 mb-6 text-center">Login</h1>
+        <form action="/login" method="post" class="bg-gray-800 rounded-lg border border-gray-700 p-6 space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+            <label class="block text-sm font-medium text-gray-300 mb-1">Username</label>
             <input
               type="text"
               name="username"
               required
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label class="block text-sm font-medium text-gray-300 mb-1">Password</label>
             <input
               type="password"
               name="password"
               required
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
           <button
             type="submit"
-            class="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 font-medium"
+            class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 font-medium"
           >
             Login
           </button>
@@ -86,33 +86,33 @@ app.post('/login', async (c) => {
     return c.html(
       <Layout title="Login">
         <div class="max-w-md mx-auto">
-          <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Login</h1>
-          <div class="bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm">
+          <h1 class="text-2xl font-bold text-gray-100 mb-6 text-center">Login</h1>
+          <div class="bg-red-900/50 text-red-400 p-3 rounded-lg mb-4 text-sm border border-red-800">
             Invalid username or password
           </div>
-          <form action="/login" method="post" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-4">
+          <form action="/login" method="post" class="bg-gray-800 rounded-lg border border-gray-700 p-6 space-y-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+              <label class="block text-sm font-medium text-gray-300 mb-1">Username</label>
               <input
                 type="text"
                 name="username"
                 required
                 value={username}
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <label class="block text-sm font-medium text-gray-300 mb-1">Password</label>
               <input
                 type="password"
                 name="password"
                 required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
             <button
               type="submit"
-              class="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 font-medium"
+              class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 font-medium"
             >
               Login
             </button>
@@ -127,33 +127,33 @@ app.post('/login', async (c) => {
     return c.html(
       <Layout title="Login">
         <div class="max-w-md mx-auto">
-          <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Login</h1>
-          <div class="bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm">
+          <h1 class="text-2xl font-bold text-gray-100 mb-6 text-center">Login</h1>
+          <div class="bg-red-900/50 text-red-400 p-3 rounded-lg mb-4 text-sm border border-red-800">
             Invalid username or password
           </div>
-          <form action="/login" method="post" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-4">
+          <form action="/login" method="post" class="bg-gray-800 rounded-lg border border-gray-700 p-6 space-y-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+              <label class="block text-sm font-medium text-gray-300 mb-1">Username</label>
               <input
                 type="text"
                 name="username"
                 required
                 value={username}
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <label class="block text-sm font-medium text-gray-300 mb-1">Password</label>
               <input
                 type="password"
                 name="password"
                 required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
             <button
               type="submit"
-              class="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 font-medium"
+              class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 font-medium"
             >
               Login
             </button>
@@ -164,9 +164,10 @@ app.post('/login', async (c) => {
   }
 
   const sessionId = await createSession(c.env.DB, user.id);
+  const isLocalhost = new URL(c.req.url).hostname === 'localhost';
   setCookie(c, 'session', sessionId, {
     httpOnly: true,
-    secure: true,
+    secure: !isLocalhost,
     sameSite: 'Lax',
     maxAge: 30 * 24 * 60 * 60, // 30 days
     path: '/',
@@ -217,13 +218,13 @@ app.get('/', requireAuth, async (c) => {
     <Layout title="Dashboard" username={user.username}>
       <div class="space-y-8">
         <div>
-          <h1 class="text-2xl font-bold text-gray-800 mb-2">Today's Habits</h1>
-          <p class="text-gray-600 mb-6">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+          <h1 class="text-2xl font-bold text-gray-100 mb-2">Today's Habits</h1>
+          <p class="text-gray-400 mb-6">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
           <HabitList habits={habitData} />
         </div>
 
-        <div class="border-t border-gray-200 pt-8">
-          <h2 class="text-lg font-semibold text-gray-800 mb-4">Add New Habit</h2>
+        <div class="border-t border-gray-700 pt-8">
+          <h2 class="text-lg font-semibold text-gray-100 mb-4">Add New Habit</h2>
           <form
             action="/habits"
             method="post"
@@ -234,11 +235,11 @@ app.get('/', requireAuth, async (c) => {
               name="name"
               required
               placeholder="Enter habit name..."
-              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
             <button
               type="submit"
-              class="bg-blue-500 text-white py-2 px-6 rounded-lg hover:bg-blue-600 font-medium"
+              class="bg-blue-600 text-white py-2 px-6 rounded-lg hover:bg-blue-700 font-medium"
             >
               Add Habit
             </button>
@@ -340,12 +341,12 @@ app.get('/habits/:id/calendar', requireAuth, async (c) => {
     <Layout title={`${habit.name} - Calendar`} username={user.username}>
       <div class="space-y-6">
         <div class="flex items-center gap-4">
-          <a href="/" class="text-blue-500 hover:text-blue-600">
+          <a href="/" class="text-blue-400 hover:text-blue-300">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
           </a>
-          <h1 class="text-2xl font-bold text-gray-800">{habit.name}</h1>
+          <h1 class="text-2xl font-bold text-gray-100">{habit.name}</h1>
         </div>
         <Calendar
           habitId={habit.id}

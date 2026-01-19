@@ -19,22 +19,22 @@ export const Calendar: FC<CalendarProps> = ({ habitId, habitName, year, month, c
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   return (
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <div class="bg-gray-800 rounded-lg border border-gray-700 p-6">
       <div class="flex items-center justify-between mb-6">
         <a
           href={`/habits/${habitId}/calendar?month=${prevMonth}`}
-          class="p-2 hover:bg-gray-100 rounded-lg text-gray-600 hover:text-gray-800"
+          class="p-2 hover:bg-gray-700 rounded-lg text-gray-400 hover:text-gray-200"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
           </svg>
         </a>
-        <h3 class="text-lg font-semibold text-gray-800">
+        <h3 class="text-lg font-semibold text-gray-100">
           {monthName} {year}
         </h3>
         <a
           href={`/habits/${habitId}/calendar?month=${nextMonth}`}
-          class="p-2 hover:bg-gray-100 rounded-lg text-gray-600 hover:text-gray-800"
+          class="p-2 hover:bg-gray-700 rounded-lg text-gray-400 hover:text-gray-200"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -59,10 +59,10 @@ export const Calendar: FC<CalendarProps> = ({ habitId, habitName, year, month, c
             <div
               class={`
                 aspect-square flex items-center justify-center text-sm rounded-lg
-                ${!isCurrentMonth ? 'text-gray-300' : 'text-gray-700'}
+                ${!isCurrentMonth ? 'text-gray-600' : 'text-gray-300'}
                 ${isCompleted && isCurrentMonth ? 'bg-green-500 text-white font-medium' : ''}
-                ${isToday && isCurrentMonth && !isCompleted ? 'ring-2 ring-blue-500 ring-inset' : ''}
-                ${isCurrentMonth && !isCompleted ? 'hover:bg-gray-100' : ''}
+                ${isToday && isCurrentMonth && !isCompleted ? 'ring-2 ring-blue-400 ring-inset' : ''}
+                ${isCurrentMonth && !isCompleted ? 'hover:bg-gray-700' : ''}
               `}
             >
               {day}
@@ -71,13 +71,13 @@ export const Calendar: FC<CalendarProps> = ({ habitId, habitName, year, month, c
         })}
       </div>
 
-      <div class="mt-6 flex items-center gap-4 text-sm text-gray-600">
+      <div class="mt-6 flex items-center gap-4 text-sm text-gray-400">
         <div class="flex items-center gap-2">
           <div class="w-4 h-4 rounded bg-green-500"></div>
           <span>Completed</span>
         </div>
         <div class="flex items-center gap-2">
-          <div class="w-4 h-4 rounded ring-2 ring-blue-500 ring-inset"></div>
+          <div class="w-4 h-4 rounded ring-2 ring-blue-400 ring-inset"></div>
           <span>Today</span>
         </div>
       </div>
