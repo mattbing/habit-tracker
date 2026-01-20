@@ -1,4 +1,4 @@
-import { Hono } from "hono";
+import { Hono, type Context } from "hono";
 import { getCookie, setCookie, deleteCookie } from "hono/cookie";
 import type { Env, Variables, User, Habit, HabitLog } from "./types";
 import {
@@ -13,6 +13,12 @@ import { HabitCard, HabitList } from "./components/HabitCard";
 import { Calendar } from "./components/Calendar";
 
 const app = new Hono<{ Bindings: Env; Variables: Variables }>();
+
+// Helper to extract local date from request header
+function getLocalDate(c: Context): string {
+  const localDate = c.req.header("X-Local-Date");
+  return getTodayDate(localDate);
+}
 
 // Auth middleware
 app.use("*", async (c, next) => {
@@ -249,7 +255,7 @@ const requireAuth = async (c: any, next: any) => {
 // Dashboard (home)
 app.get("/", requireAuth, async (c) => {
   const user = c.get("user")!;
-  const today = getTodayDate();
+  const today = getLocalDate(c);
 
   // Query habits with completion status and last tagged date
   const habits = await c.env.DB.prepare(`
@@ -398,11 +404,28 @@ app.post("/habits/reorder", requireAuth, async (c) => {
   }
 });
 
-// Toggle habit for today
+// Toggle habit for a date (defaults to today)
 app.post("/habits/:id/toggle", requireAuth, async (c) => {
   const user = c.get("user")!;
   const habitId = parseInt(c.req.param("id"));
-  const today = getTodayDate();
+  const today = getLocalDate(c);
+
+  // Check for optional date parameter (for calendar-based toggling)
+  const dateParam = c.req.query("date");
+  const isCalendarToggle = !!dateParam;
+
+  // Validate date format if provided
+  let targetDate = today;
+  if (dateParam) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateParam)) {
+      return c.text("Invalid date format", 400);
+    }
+    // Don't allow future dates
+    if (dateParam > today) {
+      return c.text("Cannot toggle future dates", 400);
+    }
+    targetDate = dateParam;
+  }
 
   // Verify habit belongs to user
   const habit = await c.env.DB.prepare(
@@ -415,11 +438,11 @@ app.post("/habits/:id/toggle", requireAuth, async (c) => {
     return c.text("Not found", 404);
   }
 
-  // Check if already completed today
+  // Check if already completed for target date
   const existing = await c.env.DB.prepare(
     "SELECT * FROM habit_logs WHERE habit_id = ? AND date = ?"
   )
-    .bind(habitId, today)
+    .bind(habitId, targetDate)
     .first<HabitLog>();
 
   if (existing) {
@@ -427,17 +450,49 @@ app.post("/habits/:id/toggle", requireAuth, async (c) => {
     await c.env.DB.prepare(
       "DELETE FROM habit_logs WHERE habit_id = ? AND date = ?"
     )
-      .bind(habitId, today)
+      .bind(habitId, targetDate)
       .run();
   } else {
     // Add completion
     await c.env.DB.prepare(
       "INSERT INTO habit_logs (habit_id, date) VALUES (?, ?)"
     )
-      .bind(habitId, today)
+      .bind(habitId, targetDate)
       .run();
   }
 
+  // If this is a calendar toggle, return updated Calendar
+  if (isCalendarToggle) {
+    // Parse the date to get year and month for the calendar view
+    const [yearStr, monthStr] = targetDate.split("-");
+    const year = parseInt(yearStr);
+    const month = parseInt(monthStr) - 1; // 0-indexed
+
+    // Get all completions for this month (and surrounding days for display)
+    const startDate = `${year}-${String(month).padStart(2, "0")}-01`;
+    const endDate = `${year}-${String(month + 2).padStart(2, "0")}-01`;
+
+    const logs = await c.env.DB.prepare(
+      `SELECT date FROM habit_logs WHERE habit_id = ? AND date >= ? AND date < ?`
+    )
+      .bind(habitId, startDate, endDate)
+      .all<{ date: string }>();
+
+    const completedDates = new Set(logs.results?.map((l) => l.date) || []);
+
+    return c.html(
+      <Calendar
+        habitId={habit.id}
+        habitName={habit.name}
+        year={year}
+        month={month}
+        completedDates={completedDates}
+        today={today}
+      />
+    );
+  }
+
+  // Otherwise, return updated HabitCard (for dashboard toggle)
   const completedToday = !existing;
 
   // Get the last tagged date
@@ -494,6 +549,7 @@ app.get("/habits/:id/calendar/partial", requireAuth, async (c) => {
       year={year}
       month={month}
       completedDates={completedDates}
+      today={getLocalDate(c)}
     />
   );
 });
@@ -564,6 +620,7 @@ app.get("/habits/:id/calendar", requireAuth, async (c) => {
             year={year}
             month={month}
             completedDates={completedDates}
+            today={getLocalDate(c)}
           />
         </div>
       </div>
@@ -575,7 +632,7 @@ app.get("/habits/:id/calendar", requireAuth, async (c) => {
 app.get("/habits/:id/card", requireAuth, async (c) => {
   const user = c.get("user")!;
   const habitId = parseInt(c.req.param("id"));
-  const today = getTodayDate();
+  const today = getLocalDate(c);
 
   const habit = await c.env.DB.prepare(
     "SELECT * FROM habits WHERE id = ? AND user_id = ?"
@@ -613,7 +670,7 @@ app.get("/habits/:id/card", requireAuth, async (c) => {
 app.get("/habits/:id/edit", requireAuth, async (c) => {
   const user = c.get("user")!;
   const habitId = parseInt(c.req.param("id"));
-  const today = getTodayDate();
+  const today = getLocalDate(c);
 
   const habit = await c.env.DB.prepare(
     "SELECT * FROM habits WHERE id = ? AND user_id = ?"
@@ -680,7 +737,7 @@ app.post("/habits/:id/rename", requireAuth, async (c) => {
     return c.text("A habit with that name already exists", 400);
   }
 
-  const today = getTodayDate();
+  const today = getLocalDate(c);
 
   // Check if completed today
   const todayLog = await c.env.DB.prepare(

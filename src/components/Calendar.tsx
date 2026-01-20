@@ -12,6 +12,7 @@ interface CalendarProps {
   year: number;
   month: number;
   completedDates: Set<string>;
+  today: string;
 }
 
 export const Calendar: FC<CalendarProps> = ({
@@ -20,12 +21,12 @@ export const Calendar: FC<CalendarProps> = ({
   year,
   month,
   completedDates,
+  today,
 }) => {
   const days = getMonthDays(year, month);
   const monthName = getMonthName(month);
   const prevMonth = getPrevMonth(year, month);
   const nextMonth = getNextMonth(year, month);
-  const today = new Date().toISOString().split("T")[0];
 
   const weekDays = ["S", "M", "T", "W", "T", "F", "S"];
 
@@ -106,16 +107,46 @@ export const Calendar: FC<CalendarProps> = ({
         {days.map(({ date, day, isCurrentMonth }) => {
           const isCompleted = completedDates.has(date);
           const isToday = date === today;
+          const isFuture = date > today;
+          const isClickable = isCurrentMonth && !isFuture;
+
+          const baseClasses =
+            "aspect-square flex items-center justify-center text-sm rounded-xl transition-colors";
+          const monthClasses = !isCurrentMonth
+            ? "text-warm-500/30"
+            : "text-warm-300";
+          const completedClasses =
+            isCompleted && isCurrentMonth
+              ? "bg-moss-500 text-night-950 font-medium"
+              : "";
+          const todayClasses =
+            isToday && isCurrentMonth && !isCompleted
+              ? "ring-2 ring-ember-500 ring-inset text-ember-400 font-medium"
+              : "";
+          const hoverClasses =
+            isClickable && !isCompleted
+              ? "hover:bg-night-700/50 cursor-pointer"
+              : "";
+          const clickableCompletedHover =
+            isClickable && isCompleted ? "hover:bg-moss-600 cursor-pointer" : "";
+
+          if (isClickable) {
+            return (
+              <button
+                type="button"
+                hx-post={`/habits/${habitId}/toggle?date=${date}`}
+                hx-target="#calendar-container"
+                hx-swap="outerHTML"
+                class={`${baseClasses} ${monthClasses} ${completedClasses} ${todayClasses} ${hoverClasses} ${clickableCompletedHover}`}
+              >
+                {day}
+              </button>
+            );
+          }
 
           return (
             <div
-              class={`
-                aspect-square flex items-center justify-center text-sm rounded-xl transition-colors
-                ${!isCurrentMonth ? "text-warm-500/30" : "text-warm-300"}
-                ${isCompleted && isCurrentMonth ? "bg-moss-500 text-night-950 font-medium" : ""}
-                ${isToday && isCurrentMonth && !isCompleted ? "ring-2 ring-ember-500 ring-inset text-ember-400 font-medium" : ""}
-                ${isCurrentMonth && !isCompleted ? "hover:bg-night-700/50" : ""}
-              `}
+              class={`${baseClasses} ${monthClasses} ${completedClasses} ${todayClasses}`}
             >
               {day}
             </div>

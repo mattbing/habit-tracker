@@ -200,6 +200,15 @@ export const Layout: FC<LayoutProps> = ({ title, children, username }) => {
             }
           });
 
+          // Send user's local date with every HTMX request
+          document.body.addEventListener('htmx:configRequest', function(evt) {
+            const today = new Date();
+            const localDate = today.getFullYear() + '-' +
+              String(today.getMonth() + 1).padStart(2, '0') + '-' +
+              String(today.getDate()).padStart(2, '0');
+            evt.detail.headers['X-Local-Date'] = localDate;
+          });
+
           // Re-initialize after HTMX swaps
           document.body.addEventListener('htmx:afterSwap', function(evt) {
             const habitList = document.getElementById('habit-list');

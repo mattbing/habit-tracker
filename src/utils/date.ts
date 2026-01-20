@@ -1,4 +1,7 @@
-export function getTodayDate(): string {
+export function getTodayDate(localDateOverride?: string): string {
+  if (localDateOverride && /^\d{4}-\d{2}-\d{2}$/.test(localDateOverride)) {
+    return localDateOverride;
+  }
   return new Date().toISOString().split("T")[0];
 }
 
