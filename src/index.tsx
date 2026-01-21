@@ -625,6 +625,15 @@ app.get("/habits/:id/calendar", requireAuth, async (c) => {
           />
         </div>
       </div>
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `document.addEventListener("keydown", function(e) {
+            if (e.key === "Escape") {
+              window.location.href = "/";
+            }
+          });`,
+        }}
+      />
     </Layout>
   );
 });
