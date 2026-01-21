@@ -14,9 +14,10 @@ import { Calendar } from "./components/Calendar";
 
 const app = new Hono<{ Bindings: Env; Variables: Variables }>();
 
-// Helper to extract local date from request header
+// Helper to extract local date from request header or cookie
 function getLocalDate(c: Context): string {
-  const localDate = c.req.header("X-Local-Date");
+  // Prefer header (HTMX requests), fall back to cookie (page loads)
+  const localDate = c.req.header("X-Local-Date") || getCookie(c, "localDate");
   return getTodayDate(localDate);
 }
 
@@ -287,12 +288,12 @@ app.get("/", requireAuth, async (c) => {
       <div class="space-y-8">
         {/* Header */}
         <div class="animate-in">
-          <p class="text-warm-500 text-sm mb-1">
-            {new Date().toLocaleDateString("en-US", {
-              weekday: "long",
-              month: "long",
-              day: "numeric",
-            })}
+          <p class="text-warm-500 text-sm mb-1" id="current-date">
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `document.write(new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" }));`,
+              }}
+            />
           </p>
           <h1 class="font-display text-3xl font-medium text-warm-100">
             Today's habits

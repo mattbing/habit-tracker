@@ -200,13 +200,20 @@ export const Layout: FC<LayoutProps> = ({ title, children, username }) => {
             }
           });
 
-          // Send user's local date with every HTMX request
-          document.body.addEventListener('htmx:configRequest', function(evt) {
+          // Set local date cookie and send with HTMX requests
+          function getLocalDateString() {
             const today = new Date();
-            const localDate = today.getFullYear() + '-' +
+            return today.getFullYear() + '-' +
               String(today.getMonth() + 1).padStart(2, '0') + '-' +
               String(today.getDate()).padStart(2, '0');
-            evt.detail.headers['X-Local-Date'] = localDate;
+          }
+
+          // Set cookie so server can read local date on page loads
+          document.cookie = 'localDate=' + getLocalDateString() + ';path=/;SameSite=Lax';
+
+          // Send user's local date with every HTMX request
+          document.body.addEventListener('htmx:configRequest', function(evt) {
+            evt.detail.headers['X-Local-Date'] = getLocalDateString();
           });
 
           // Re-initialize after HTMX swaps
