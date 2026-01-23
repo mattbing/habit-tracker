@@ -307,7 +307,7 @@ app.get("/", requireAuth, async (c) => {
         </div>
 
         {/* Habit list */}
-        <HabitList habits={habitData} />
+        <HabitList habits={habitData} today={today} />
 
         {/* Add new habit form */}
         <div class="animate-in delay-4 pt-4 border-t border-night-700/50">
@@ -509,6 +509,7 @@ app.post("/habits/:id/toggle", requireAuth, async (c) => {
       name={habit.name}
       completedToday={completedToday}
       lastTagged={lastTaggedResult?.last_tagged ?? null}
+      today={today}
     />
   );
 });
@@ -672,6 +673,7 @@ app.get("/habits/:id/card", requireAuth, async (c) => {
       name={habit.name}
       completedToday={!!todayLog}
       lastTagged={lastTaggedResult?.last_tagged ?? null}
+      today={today}
     />
   );
 });
@@ -710,6 +712,7 @@ app.get("/habits/:id/edit", requireAuth, async (c) => {
       name={habit.name}
       completedToday={!!todayLog}
       lastTagged={lastTaggedResult?.last_tagged ?? null}
+      today={today}
       isEditing={true}
     />
   );
@@ -769,6 +772,7 @@ app.post("/habits/:id/rename", requireAuth, async (c) => {
       name={newName}
       completedToday={!!todayLog}
       lastTagged={lastTaggedResult?.last_tagged ?? null}
+      today={today}
     />
   );
 });

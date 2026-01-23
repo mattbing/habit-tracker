@@ -6,6 +6,7 @@ interface HabitCardProps {
   name: string;
   completedToday: boolean;
   lastTagged: string | null;
+  today: string;
   isEditing?: boolean;
 }
 
@@ -14,9 +15,10 @@ export const HabitCard: FC<HabitCardProps> = ({
   name,
   completedToday,
   lastTagged,
+  today,
   isEditing = false,
 }) => {
-  const relativeTime = lastTagged ? formatRelativeTime(lastTagged) : null;
+  const relativeTime = lastTagged ? formatRelativeTime(lastTagged, today) : null;
 
   return (
     <div
@@ -169,9 +171,10 @@ interface HabitListProps {
     completedToday: boolean;
     lastTagged: string | null;
   }>;
+  today: string;
 }
 
-export const HabitList: FC<HabitListProps> = ({ habits }) => {
+export const HabitList: FC<HabitListProps> = ({ habits, today }) => {
   return (
     <div id="habit-list" class="space-y-2">
       {habits.length === 0 ? (
@@ -206,6 +209,7 @@ export const HabitList: FC<HabitListProps> = ({ habits }) => {
               name={habit.name}
               completedToday={habit.completedToday}
               lastTagged={habit.lastTagged}
+              today={today}
             />
           </div>
         ))

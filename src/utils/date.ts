@@ -5,10 +5,9 @@ export function getTodayDate(localDateOverride?: string): string {
   return new Date().toISOString().split("T")[0];
 }
 
-export function formatRelativeTime(dateStr: string): string {
+export function formatRelativeTime(dateStr: string, todayStr: string): string {
   const date = new Date(dateStr + "T00:00:00");
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const today = new Date(todayStr + "T00:00:00");
 
   const diffTime = today.getTime() - date.getTime();
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
