@@ -156,17 +156,7 @@ export const Layout: FC<LayoutProps> = ({ title, children, username }) => {
               Habits
             </a>
             {username && (
-              <div class="flex items-center gap-5">
-                <span class="text-warm-400 text-sm">{username}</span>
-                <form action="/logout" method="post">
-                  <button
-                    type="submit"
-                    class="text-sm text-warm-400 hover:text-ember-400 transition-colors"
-                  >
-                    Sign out
-                  </button>
-                </form>
-              </div>
+              <span class="text-warm-400 text-sm">{username}</span>
             )}
           </div>
         </nav>

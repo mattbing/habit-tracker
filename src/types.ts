@@ -5,12 +5,6 @@ export interface User {
   created_at: string;
 }
 
-export interface Session {
-  id: string;
-  user_id: number;
-  expires_at: string;
-}
-
 export interface Habit {
   id: number;
   user_id: number;
@@ -28,9 +22,10 @@ export interface HabitLog {
 
 export interface Env {
   DB: D1Database;
+  CF_ACCESS_TEAM_DOMAIN: string;
+  CF_ACCESS_AUD: string;
 }
 
 export interface Variables {
   user: User | null;
-  session: Session | null;
 }

@@ -1,12 +1,7 @@
 import { Hono, type Context } from "hono";
-import { getCookie, setCookie, deleteCookie } from "hono/cookie";
+import { getCookie } from "hono/cookie";
 import type { Env, Variables, User, Habit, HabitLog } from "./types";
-import {
-  verifyPassword,
-  createSession,
-  getSession,
-  deleteSession,
-} from "./utils/auth";
+import { validateAccessJWT } from "./utils/access";
 import { getTodayDate, parseYearMonth } from "./utils/date";
 import { Layout } from "./components/Layout";
 import { HabitCard, HabitList } from "./components/HabitCard";
@@ -21,234 +16,52 @@ function getLocalDate(c: Context): string {
   return getTodayDate(localDate);
 }
 
-// Auth middleware
+// Auth middleware — validate Cloudflare Access JWT
 app.use("*", async (c, next) => {
-  const sessionId = getCookie(c, "session");
+  const token = c.req.header("Cf-Access-Jwt-Assertion");
 
-  if (sessionId) {
-    const result = await getSession(c.env.DB, sessionId);
-    if (result) {
-      c.set("user", result.user);
-      c.set("session", result.session);
-    } else {
-      c.set("user", null);
-      c.set("session", null);
-      deleteCookie(c, "session");
-    }
-  } else {
+  if (!token) {
     c.set("user", null);
-    c.set("session", null);
+    return next();
   }
 
-  await next();
-});
-
-// Login page
-app.get("/login", (c) => {
-  const user = c.get("user");
-  if (user) {
-    return c.redirect("/");
-  }
-
-  return c.html(
-    <Layout title="Login">
-      <div class="max-w-sm mx-auto pt-12">
-        <div class="text-center mb-8">
-          <h1 class="font-display text-3xl font-medium text-warm-100 mb-2">
-            Welcome back
-          </h1>
-          <p class="text-warm-400">Sign in to continue tracking your habits</p>
-        </div>
-        <form
-          action="/login"
-          method="post"
-          class="bg-night-800/60 rounded-2xl border border-night-700/50 p-6 space-y-5"
-        >
-          <div>
-            <label class="block text-sm font-medium text-warm-300 mb-2">
-              Username
-            </label>
-            <input
-              type="text"
-              name="username"
-              required
-              class="w-full px-4 py-3 bg-night-900/50 border border-night-600 rounded-xl text-warm-100 placeholder-warm-500 focus:ring-2 focus:ring-ember-500/20 focus:border-ember-500 transition-colors"
-              placeholder="Enter your username"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-warm-300 mb-2">
-              Password
-            </label>
-            <input
-              type="password"
-              name="password"
-              required
-              class="w-full px-4 py-3 bg-night-900/50 border border-night-600 rounded-xl text-warm-100 placeholder-warm-500 focus:ring-2 focus:ring-ember-500/20 focus:border-ember-500 transition-colors"
-              placeholder="Enter your password"
-            />
-          </div>
-          <button
-            type="submit"
-            class="w-full bg-ember-500 text-night-950 py-3 px-4 rounded-xl hover:bg-ember-400 font-medium transition-colors"
-          >
-            Sign in
-          </button>
-        </form>
-      </div>
-    </Layout>
+  const email = await validateAccessJWT(
+    token,
+    c.env.CF_ACCESS_TEAM_DOMAIN,
+    c.env.CF_ACCESS_AUD
   );
-});
 
-app.post("/login", async (c) => {
-  const body = await c.req.parseBody();
-  const username = body.username as string;
-  const password = body.password as string;
+  if (!email) {
+    c.set("user", null);
+    return next();
+  }
 
-  const user = await c.env.DB.prepare(
-    "SELECT * FROM users WHERE username = ?"
-  )
-    .bind(username)
+  // Look up user by email
+  let user = await c.env.DB.prepare("SELECT * FROM users WHERE username = ?")
+    .bind(email)
     .first<User>();
 
+  // Auto-create user if not found
   if (!user) {
-    return c.html(
-      <Layout title="Login">
-        <div class="max-w-sm mx-auto pt-12">
-          <div class="text-center mb-8">
-            <h1 class="font-display text-3xl font-medium text-warm-100 mb-2">
-              Welcome back
-            </h1>
-            <p class="text-warm-400">Sign in to continue tracking your habits</p>
-          </div>
-          <div class="bg-clay-500/10 text-clay-400 p-4 rounded-xl mb-4 text-sm border border-clay-500/20">
-            Invalid username or password
-          </div>
-          <form
-            action="/login"
-            method="post"
-            class="bg-night-800/60 rounded-2xl border border-night-700/50 p-6 space-y-5"
-          >
-            <div>
-              <label class="block text-sm font-medium text-warm-300 mb-2">
-                Username
-              </label>
-              <input
-                type="text"
-                name="username"
-                required
-                value={username}
-                class="w-full px-4 py-3 bg-night-900/50 border border-night-600 rounded-xl text-warm-100 placeholder-warm-500 focus:ring-2 focus:ring-ember-500/20 focus:border-ember-500 transition-colors"
-                placeholder="Enter your username"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-warm-300 mb-2">
-                Password
-              </label>
-              <input
-                type="password"
-                name="password"
-                required
-                class="w-full px-4 py-3 bg-night-900/50 border border-night-600 rounded-xl text-warm-100 placeholder-warm-500 focus:ring-2 focus:ring-ember-500/20 focus:border-ember-500 transition-colors"
-                placeholder="Enter your password"
-              />
-            </div>
-            <button
-              type="submit"
-              class="w-full bg-ember-500 text-night-950 py-3 px-4 rounded-xl hover:bg-ember-400 font-medium transition-colors"
-            >
-              Sign in
-            </button>
-          </form>
-        </div>
-      </Layout>
-    );
+    await c.env.DB.prepare(
+      "INSERT INTO users (username, password_hash) VALUES (?, '')"
+    )
+      .bind(email)
+      .run();
+    user = await c.env.DB.prepare("SELECT * FROM users WHERE username = ?")
+      .bind(email)
+      .first<User>();
   }
 
-  const valid = await verifyPassword(password, user.password_hash);
-  if (!valid) {
-    return c.html(
-      <Layout title="Login">
-        <div class="max-w-sm mx-auto pt-12">
-          <div class="text-center mb-8">
-            <h1 class="font-display text-3xl font-medium text-warm-100 mb-2">
-              Welcome back
-            </h1>
-            <p class="text-warm-400">Sign in to continue tracking your habits</p>
-          </div>
-          <div class="bg-clay-500/10 text-clay-400 p-4 rounded-xl mb-4 text-sm border border-clay-500/20">
-            Invalid username or password
-          </div>
-          <form
-            action="/login"
-            method="post"
-            class="bg-night-800/60 rounded-2xl border border-night-700/50 p-6 space-y-5"
-          >
-            <div>
-              <label class="block text-sm font-medium text-warm-300 mb-2">
-                Username
-              </label>
-              <input
-                type="text"
-                name="username"
-                required
-                value={username}
-                class="w-full px-4 py-3 bg-night-900/50 border border-night-600 rounded-xl text-warm-100 placeholder-warm-500 focus:ring-2 focus:ring-ember-500/20 focus:border-ember-500 transition-colors"
-                placeholder="Enter your username"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-warm-300 mb-2">
-                Password
-              </label>
-              <input
-                type="password"
-                name="password"
-                required
-                class="w-full px-4 py-3 bg-night-900/50 border border-night-600 rounded-xl text-warm-100 placeholder-warm-500 focus:ring-2 focus:ring-ember-500/20 focus:border-ember-500 transition-colors"
-                placeholder="Enter your password"
-              />
-            </div>
-            <button
-              type="submit"
-              class="w-full bg-ember-500 text-night-950 py-3 px-4 rounded-xl hover:bg-ember-400 font-medium transition-colors"
-            >
-              Sign in
-            </button>
-          </form>
-        </div>
-      </Layout>
-    );
-  }
-
-  const sessionId = await createSession(c.env.DB, user.id);
-  const isLocalhost = new URL(c.req.url).hostname === "localhost";
-  setCookie(c, "session", sessionId, {
-    httpOnly: true,
-    secure: !isLocalhost,
-    sameSite: "Lax",
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-    path: "/",
-  });
-
-  return c.redirect("/");
-});
-
-app.post("/logout", async (c) => {
-  const session = c.get("session");
-  if (session) {
-    await deleteSession(c.env.DB, session.id);
-  }
-  deleteCookie(c, "session");
-  return c.redirect("/login");
+  c.set("user", user ?? null);
+  await next();
 });
 
 // Protected routes middleware
 const requireAuth = async (c: any, next: any) => {
   const user = c.get("user");
   if (!user) {
-    return c.redirect("/login");
+    return c.text("Unauthorized", 403);
   }
   await next();
 };
